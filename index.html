@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тапалка 2.0</title>
+    <!-- Подключение шрифта Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            font-size: 24px;
+        }
+        main {
+            padding: 20px;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        button {
+            font-size: 24px;
+            padding: 15px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .score {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        .leaderboard, .referrals, .tasks {
+            margin-top: 30px;
+            text-align: left;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #fff;
+        }
+        .section-title {
+            font-size: 20px;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+        .leaderboard-item {
+            font-size: 18px;
+            color: #555;
+            margin: 5px 0;
+        }
+        .referral-input, .task-item {
+            margin: 10px 0;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 80%;
+            max-width: 300px;
+        }
+        .task-item {
+            padding: 8px 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .task-item button {
+            font-size: 16px;
+            padding: 5px 10px;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Тапалка 2.0
+    </header>
+    <main>
+        <h1>Добро пожаловать в Тапалку!</h1>
+        <button id="tap-button">Тапни!</button>
+        <div class="score">Очки: <span id="score">0</span></div>
+
+        <!-- Лидерборд -->
+        <div class="leaderboard">
+            <div class="section-title">🏆 Лидерборд</div>
+            <div id="leaderboard-list" class="leaderboard-item">
+                Пока никто не набрал очки.
+            </div>
+        </div>
+
+        <!-- Реферальный раздел -->
+        <div class="referrals">
+            <div class="section-title">🔗 Реферальный раздел</div>
+            <div class="referral-input">
+                <input type="text" id="referral-code" placeholder="Ваш реферальный код">
+                <button id="submit-referral">Подтвердить</button>
+            </div>
+            <div id="referral-status">Вы еще не добавили рефералов.</div>
+        </div>
+
+        <!-- Задания -->
+        <div class="tasks">
+            <div class="section-title">📜 Задания</div>
+            <div id="task-list">
+                <div class="task-item">
+                    <span>Тапните 10 раз</span>
+                    <button class="complete-task">Выполнить</button>
+                </div>
+                <div class="task-item">
+                    <span>Поделитесь игрой с другом</span>
+                    <button class="complete-task">Выполнить</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        © 2024 Тапалка 2.0. Все права защищены.
+    </footer>
+
+    <script>
+        let score = 0; // Переменная для подсчёта очков
+        const scoreElement = document.getElementById('score');
+        const tapButton = document.getElementById('tap-button');
+        const leaderboard = document.getElementById('leaderboard-list');
+        const referralStatus = document.getElementById('referral-status');
+        const referralInput = document.getElementById('referral-code');
+        const submitReferral = document.getElementById('submit-referral');
+        const taskList = document.getElementById('task-list');
+
+        let leaderboardData = [
+            { name: "Игрок1", score: 100 },
+            { name: "Игрок2", score: 50 }
+        ];
+
+        // Обновление лидерборда
+        function updateLeaderboard() {
+            leaderboard.innerHTML = leaderboardData
+                .sort((a, b) => b.score - a.score)
+                .map(player => `<div>${player.name}: ${player.score} очков</div>`)
+                .join('');
+        }
+
+        // Событие клика на кнопку "Тапни"
+        tapButton.addEventListener('click', () => {
+            score++;
+            scoreElement.textContent = score;
+            const playerIndex = leaderboardData.findIndex(p => p.name === "Вы");
+            if (playerIndex >= 0) {
+                leaderboardData[playerIndex].score = score;
+            } else {
+                leaderboardData.push({ name: "Вы", score: score });
+            }
+            updateLeaderboard();
+        });
+
+        // Событие ввода реферального кода
+        submitReferral.addEventListener('click', () => {
+            const code = referralInput.value.trim();
+            if (code) {
+                referralStatus.textContent = `Вы добавили реферальный код: ${code}`;
+                referralInput.value = '';
+            } else {
+                alert("Введите реферальный код.");
+            }
+        });
+
+        // Событие выполнения задания
+        taskList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('complete-task')) {
+                e.target.parentElement.style.textDecoration = "line-through";
+                e.target.disabled = true;
+                e.target.textContent = "Выполнено";
+            }
+        });
+
+        // Инициализация
+        updateLeaderboard();
+    </script>
+</body>
+</html>
